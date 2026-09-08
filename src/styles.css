@@ -100,8 +100,8 @@ button {
 
 .tab-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(420px, 100%);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: min(640px, 100%);
   padding: 3px;
   border: 1px solid #d9dce2;
   border-radius: 7px;
@@ -307,6 +307,112 @@ button {
   text-align: center;
 }
 
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.gallery-item {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e0e3e8;
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(21, 25, 33, 0.04);
+}
+
+.gallery-preview {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  place-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #e6e8ec;
+  background: #f1f2f4;
+}
+
+.gallery-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gallery-info {
+  padding: 13px;
+}
+
+.gallery-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.gallery-heading h2 {
+  margin: 0;
+  min-width: 0;
+  color: #232832;
+  font-size: 15px;
+  line-height: 1.45;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.comment-references {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-height: 24px;
+  margin-top: 9px;
+}
+
+.comment-references span {
+  padding: 3px 6px;
+  border-radius: 999px;
+  color: #5a4b25;
+  background: #f5edcf;
+  font-size: 11px;
+}
+
+.gallery-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.asset-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid #cfd3da;
+  border-radius: 6px;
+  color: #3c424c;
+  background: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.asset-button:hover {
+  background: #f2f3f5;
+}
+
+.asset-button.primary {
+  color: #ffffff;
+  border-color: #ff375f;
+  background: #ff375f;
+}
+
+.asset-button.primary:hover {
+  background: #e9294e;
+}
+
 .toast {
   position: fixed;
   left: 50%;
@@ -327,6 +433,12 @@ button {
 .toast.visible {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+@media (max-width: 900px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 700px) {
@@ -390,6 +502,19 @@ button {
 
   .copy-button {
     min-height: 40px;
+  }
+
+  .tab-button {
+    gap: 5px;
+    font-size: 13px;
+  }
+
+  .tab-button strong {
+    display: none;
+  }
+
+  .gallery-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

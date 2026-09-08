@@ -2,16 +2,21 @@ import { useMemo, useState } from "react";
 import {
   Check,
   Copy,
+  Download,
+  ExternalLink,
   FileText,
+  Images,
   MessageCircle,
   Search,
 } from "lucide-react";
 import { comments, posts } from "./content.js";
 import { buildPostText, copyText } from "./copy.js";
+import { galleryItems } from "./gallery.js";
 
 const tabs = [
   { id: "comments", label: "发评论", count: comments.length, icon: MessageCircle },
   { id: "posts", label: "发图文", count: posts.length, icon: FileText },
+  { id: "gallery", label: "宣传图库", count: galleryItems.length, icon: Images },
 ];
 
 function CopyButton({ id, copiedId, label = "复制", onCopy, secondary = false }) {
@@ -55,6 +60,13 @@ export default function App() {
     }),
     [direction, normalizedQuery],
   );
+  const filteredGallery = useMemo(
+    () => galleryItems.filter((item) => {
+      const haystack = `${item.title} ${item.commentIds.join(" ")}`.toLocaleLowerCase("zh-CN");
+      return !normalizedQuery || haystack.includes(normalizedQuery);
+    }),
+    [normalizedQuery],
+  );
 
   const performCopy = async (id, text, message) => {
     try {
@@ -69,7 +81,11 @@ export default function App() {
     }
   };
 
-  const visibleCount = activeTab === "comments" ? filteredComments.length : filteredPosts.length;
+  const visibleCount = activeTab === "comments"
+    ? filteredComments.length
+    : activeTab === "posts"
+      ? filteredPosts.length
+      : filteredGallery.length;
 
   return (
     <div className="app-shell">
@@ -78,10 +94,10 @@ export default function App() {
           <div className="brand-mark" aria-hidden="true">J</div>
           <div>
             <h1>Jianyoon 文案库</h1>
-            <p>评论与图文</p>
+            <p>评论、图文与宣传素材</p>
           </div>
         </div>
-        <div className="total-count">共 {comments.length + posts.length} 条</div>
+        <div className="total-count">共 {comments.length + posts.length + galleryItems.length} 项</div>
       </header>
 
       <main className="workspace">
@@ -114,8 +130,8 @@ export default function App() {
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="搜索文案"
-                aria-label="搜索文案"
+                placeholder={activeTab === "gallery" ? "搜索图片名称或评论序号" : "搜索文案"}
+                aria-label="搜索内容"
               />
             </label>
             {activeTab === "posts" && (
@@ -128,7 +144,7 @@ export default function App() {
                 {directions.map((item) => <option key={item}>{item}</option>)}
               </select>
             )}
-            <span className="result-count">{visibleCount} 条</span>
+            <span className="result-count">{visibleCount} {activeTab === "gallery" ? "张" : "条"}</span>
           </div>
         </div>
 
@@ -146,7 +162,7 @@ export default function App() {
               </article>
             ))}
           </section>
-        ) : (
+        ) : activeTab === "posts" ? (
           <section className="content-list" aria-label="图文文案">
             {filteredPosts.map((item) => (
               <article className="content-item post-item" key={item.id}>
@@ -172,6 +188,35 @@ export default function App() {
                     label="复制全部"
                     onCopy={() => performCopy(`post-all-${item.id}`, buildPostText(item, true), "文案和关键词已复制")}
                   />
+                </div>
+              </article>
+            ))}
+          </section>
+        ) : (
+          <section className="gallery-grid" aria-label="宣传图库">
+            {filteredGallery.map((item) => (
+              <article className="gallery-item" key={item.id}>
+                <a className="gallery-preview" href={item.file} target="_blank" rel="noreferrer">
+                  <img src={item.file} alt={item.title} loading="lazy" />
+                </a>
+                <div className="gallery-info">
+                  <div className="gallery-heading">
+                    <span className="item-number">#{item.id}</span>
+                    <h2>{item.title}</h2>
+                  </div>
+                  <div className="comment-references">
+                    {item.commentIds.map((id) => <span key={id}>评论 #{id}</span>)}
+                  </div>
+                  <div className="gallery-actions">
+                    <a className="asset-button primary" href={item.file} download={`jianyoon-${String(item.id).padStart(2, "0")}.png`}>
+                      <Download size={16} strokeWidth={2} aria-hidden="true" />
+                      <span>下载图片</span>
+                    </a>
+                    <a className="asset-button" href={item.file} target="_blank" rel="noreferrer">
+                      <ExternalLink size={16} strokeWidth={2} aria-hidden="true" />
+                      <span>查看原图</span>
+                    </a>
+                  </div>
                 </div>
               </article>
             ))}
