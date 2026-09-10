@@ -193,6 +193,17 @@ button {
   gap: 8px;
 }
 
+.comment-guide { margin-bottom: 12px; padding: 14px 16px; border: 1px solid #e0e3e8; border-radius: 6px; background: #fff; font-size: 13px; line-height: 1.75; }
+.comment-guide ol { margin: 8px 0; padding-left: 22px; }
+.comment-guide p { margin: 6px 0; color: #5b616b; }
+.comment-guide code { font-family: inherit; color: #20242c; background: #f1f2f4; padding: 1px 4px; border-radius: 3px; overflow-wrap: anywhere; }
+.comment-guide summary { cursor: pointer; color: #245a87; }
+.guide-images { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-top: 10px; align-items: start; }
+.guide-images figure { margin: 0; min-width: 0; }
+.guide-images figcaption { margin-bottom: 6px; color: #5b616b; }
+.guide-images img { display: block; max-width: 100%; height: auto; }
+@media (max-width: 700px) { .guide-images { grid-template-columns: 1fr; } }
+
 .content-item {
   display: grid;
   align-items: center;
