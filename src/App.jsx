@@ -157,13 +157,10 @@ export default function App() {
               <li>搜索并选中用户 <code>{">jianyoon"}</code>（下图账号）。名字变蓝后，保留后面的文案再发布。</li>
             </ol>
             <p>前面的 <code>{"<"}</code> 要保留；只粘贴名字不会生成蓝色 @。</p>
-            <details>
-              <summary>查看账号和评论效果</summary>
               <div className="guide-images">
                 <figure><figcaption>选择这个账号：{">jianyoon"}</figcaption><a href="/tutorial/account.png" target="_blank" rel="noreferrer"><img src="/tutorial/account.png" alt="要选择的用户 >jianyoon，锋云 API 头像" loading="lazy" /></a></figure>
                 <figure><figcaption>效果参考：选中后名字变蓝</figcaption><a href="/tutorial/result.jpg" target="_blank" rel="noreferrer"><img src="/tutorial/result.jpg" alt="抖音评论中的蓝色用户名效果" loading="lazy" /></a></figure>
               </div>
-            </details>
           </aside>
         )}
 
