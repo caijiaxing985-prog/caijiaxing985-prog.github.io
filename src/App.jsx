@@ -9,15 +9,7 @@ import {
   MessageCircle,
   Search,
 } from "lucide-react";
-import { comments, posts } from "./content.js";
 import { buildPostText, copyText } from "./copy.js";
-import { galleryItems } from "./gallery.js";
-
-const tabs = [
-  { id: "comments", label: "发评论", count: comments.length, icon: MessageCircle },
-  { id: "posts", label: "发图文", count: posts.length, icon: FileText },
-  { id: "gallery", label: "宣传图库", count: galleryItems.length, icon: Images },
-];
 
 function CopyButton({ id, copiedId, label = "复制", onCopy, secondary = false }) {
   const copied = copiedId === id;
@@ -35,7 +27,13 @@ function CopyButton({ id, copiedId, label = "复制", onCopy, secondary = false 
   );
 }
 
-export default function App() {
+export default function App({ library }) {
+  const { comments, posts, gallery: galleryItems } = library;
+  const tabs = [
+    { id: 'comments', label: '发评论', count: comments.length, icon: MessageCircle },
+    { id: 'posts', label: '发图文', count: posts.length, icon: FileText },
+    { id: 'gallery', label: '宣传图库', count: galleryItems.length, icon: Images },
+  ];
   const [activeTab, setActiveTab] = useState("comments");
   const [query, setQuery] = useState("");
   const [direction, setDirection] = useState("全部方向");
@@ -44,13 +42,13 @@ export default function App() {
 
   const directions = useMemo(
     () => ["全部方向", ...new Set(posts.map((post) => post.direction).filter(Boolean))],
-    [],
+    [posts],
   );
 
   const normalizedQuery = query.trim().toLocaleLowerCase("zh-CN");
   const filteredComments = useMemo(
     () => comments.filter((item) => !normalizedQuery || item.text.toLocaleLowerCase("zh-CN").includes(normalizedQuery)),
-    [normalizedQuery],
+    [normalizedQuery, comments],
   );
   const filteredPosts = useMemo(
     () => posts.filter((item) => {
@@ -58,14 +56,14 @@ export default function App() {
       const haystack = `${item.direction} ${item.text} ${item.keywords}`.toLocaleLowerCase("zh-CN");
       return matchesDirection && (!normalizedQuery || haystack.includes(normalizedQuery));
     }),
-    [direction, normalizedQuery],
+    [direction, normalizedQuery, posts],
   );
   const filteredGallery = useMemo(
     () => galleryItems.filter((item) => {
-      const haystack = `${item.title} ${item.commentIds.join(" ")}`.toLocaleLowerCase("zh-CN");
+      const haystack = `${item.title} ${item.description || ''} ${item.commentIds.join(" ")}`.toLocaleLowerCase("zh-CN");
       return !normalizedQuery || haystack.includes(normalizedQuery);
     }),
-    [normalizedQuery],
+    [normalizedQuery, galleryItems],
   );
 
   const performCopy = async (id, text, message) => {
@@ -220,11 +218,12 @@ export default function App() {
                     <span className="item-number">#{item.id}</span>
                     <h2>{item.title}</h2>
                   </div>
+                  {item.description && <p className="gallery-description">{item.description}</p>}
                   <div className="comment-references">
                     {item.commentIds.map((id) => <span key={id}>评论 #{id}</span>)}
                   </div>
                   <div className="gallery-actions">
-                    <a className="asset-button primary" href={item.file} download={`jianyoon-${String(item.id).padStart(2, "0")}.png`}>
+                    <a className="asset-button primary" href={item.file} download={`jianyoon-${item.id}.${item.file.split('.').pop()}`}>
                       <Download size={16} strokeWidth={2} aria-hidden="true" />
                       <span>下载图片</span>
                     </a>

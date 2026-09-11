@@ -1,0 +1,7 @@
+*
+!dist
+!dist/**
+!server
+!server/server.mjs
+!server/seed.json
+!Dockerfile

@@ -1,0 +1,22 @@
+.admin-shell { max-width:1200px; margin:auto; padding:20px; }
+.confirm-backdrop { position:fixed; inset:0; z-index:100; background:#0007; display:grid; place-items:center; padding:20px; }
+.confirm-box { background:white; border-radius:8px; padding:24px; width:min(420px,100%); }.confirm-box button { margin-right:10px; }
+.admin-login { max-width:440px; margin:8vh auto; padding:28px; background:white; border:1px solid #ddd; border-radius:8px; }
+.admin-login h1,.admin-header h1 { font-size:22px; margin:0 0 12px; }
+.admin-shell button,.admin-login button { padding:9px 14px; border:1px solid #d5d8de; border-radius:5px; background:white; color:#26303c; }
+.admin-shell .copy-button,.admin-login .copy-button { background:#ff375f; color:white; border-color:#ff375f; }
+button:disabled { opacity:.5; cursor:not-allowed; }
+.admin-header,.admin-bar,.admin-tabs,.editor-tools { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.admin-header h1 { flex:1; margin:0; }.admin-header a { color:#245a87; }
+.admin-bar { padding:14px 0; }.admin-bar span { flex:1; min-width:240px; color:#68707c; font-size:13px; }
+.admin-tabs { margin:12px 0; }.admin-tabs .active { background:#273447; color:white; }
+.admin-layout { padding:0; margin:0; border:0; display:grid; grid-template-columns:300px minmax(0,1fr); gap:20px; min-width:0; }
+.admin-list { display:flex; flex-direction:column; gap:8px; max-height:72vh; overflow:auto; padding:2px; }
+.admin-row { display:flex; gap:10px; text-align:left; font-size:13px; line-height:1.5; }.admin-row.selected { border-color:#ff375f; background:#fff2f5; }.admin-row span:first-child { min-width:30px; color:#747b86; }
+.admin-editor { background:white; border:1px solid #e0e3e8; padding:20px; border-radius:6px; min-width:0; }.editor-tools { margin-bottom:18px; }.editor-tools strong { flex:1; }.admin-shell .delete-button { color:#ae2435; }
+.admin-shell label,.admin-login label { display:block; margin:12px 0; font-size:14px; }
+.admin-shell input,.admin-shell textarea,.admin-login input { display:block; width:100%; margin-top:6px; padding:10px; border:1px solid #cfd3da; border-radius:4px; font:inherit; color:#20242c; background:white; }
+.admin-shell textarea { resize:vertical; line-height:1.65; }.admin-preview { max-width:100%; max-height:360px; display:block; object-fit:contain; margin:12px auto; }
+.admin-message { background:#e8f6ee; color:#14643e; padding:10px 14px; }.admin-error { background:#fff0ee; color:#9d2834; padding:10px 14px; }.admin-password { padding:14px; background:white; border:1px solid #ddd; }
+.gallery-description { font-size:13px; color:#5b616b; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; }
+@media(max-width:700px) { .admin-shell { padding:12px; }.admin-layout { grid-template-columns:1fr; }.admin-list { max-height:230px; }.admin-editor { padding:14px; }.admin-header h1 { flex-basis:100%; } }

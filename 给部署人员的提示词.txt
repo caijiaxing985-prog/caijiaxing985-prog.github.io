@@ -1,0 +1,24 @@
+请把附件中的“Jianyoon 文案库管理版”部署在我们现有网站的服务器上。本包是已实现的完整程序，不是功能需求草案。先阅读《使用与部署说明.md》，再根据当前环境操作。
+
+目标：
+1. 用一个独立子域名对外访问，如 wenan.我们的域名，开启 HTTPS。
+2. 运行包里的 Node 后台和已编译前端，推荐使用 Docker Compose。首页 / 为公开库，/admin 为管理后台。
+3. 我可以登录后新增、修改、删除和排序评论、图文；上传图片并改名称、介绍。保存草稿后点发布，公开页面同步，不需要再次部署。
+4. 请首次接通 GitHub 自动部署，使我方以后修复代码并推送即可更新服务器，不需每次请你手动部署。
+
+边界：
+- 独立目录、独立服务、独立数据卷，不覆盖或修改原中转站文件和数据库。
+- 不需要原站 API Key。不要把密码、私钥或 .env 放进代码仓库或群聊。
+- 如有新增费用、需要重启影响原站的服务，先告知我。
+
+部署要点：
+- 推荐目录 /srv/jianyoon。填 .env 的 PUBLIC_ORIGIN 和首次 ADMIN_PASSWORD；没有预设密码。
+- docker compose -p jianyoon-library up -d --build。
+- 服务仅绑定本机 8787，HTTPS 子域名全路径代理到 127.0.0.1:8787；上传上限至少 16 MB，HTML 和 API 不缓存。
+- 使用固定命名卷 jianyoon-library-data 持久化数据库和上传图片；接入备份，更新时不能删除该卷。
+- 源码仓库 caijiaxing985-prog/caijiaxing985-prog.github.io，管理版分支 codex/admin-library；main 保留旧静态网站，不能用 GitHub Pages 部署新后台。
+- 自动部署文件已准备：.github/workflows/deploy-server.yml 和 deploy/update-server.sh。按照说明创建受限部署账号，在 GitHub Environment library-server 配 DEPLOY_HOST / PORT / USER / KEY / KNOWN_HOSTS，最后将仓库变量 ENABLE_SERVER_DEPLOY 设 true，实测一次部署。
+
+请实际验证：未登录不能修改；草稿不公开；发布后前台同步；图片上传、名称介绍、排序和删除可用；重启及代码更新后内容保留；原中转站仍正常。在真实微信里测试访问复制及图片保存。
+
+完成后给我公开网址、/admin 后台网址、私下交付管理员密码、GitHub 自动更新验收结果以及备份方式。Docker 和远程自动部署尚未在本地制作者的环境实测，请你首次部署时负责核验并适配你当前服务器。

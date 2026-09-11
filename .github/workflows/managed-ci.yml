@@ -1,0 +1,39 @@
+name: Test managed library
+on:
+  push:
+    branches: [codex/admin-library]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Test packaged Docker runtime and persistence
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ADMIN_PASSWORD="$(openssl rand -hex 24)"
+          docker build -t library-ci .
+          docker run -d --name library-ci --env ADMIN_PASSWORD -p 127.0.0.1:18787:8787 -v library-ci-data:/data library-ci
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:18787/api/health >/dev/null; then break; fi
+            sleep 2
+          done
+          node server/container-smoke.mjs
+          docker restart library-ci
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:18787/api/health >/dev/null; then break; fi
+            sleep 2
+          done
+          node server/container-smoke.mjs --verify
+      - if: failure()
+        run: docker logs library-ci || true

@@ -1,0 +1,43 @@
+name: Deploy managed library
+on:
+  push:
+    branches: [codex/admin-library]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: managed-library-server
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: vars.ENABLE_SERVER_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    environment: library-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Pack application only
+        run: tar -czf app.tar.gz dist server/server.mjs server/seed.json Dockerfile .dockerignore
+      - name: Deploy through restricted SSH command
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$DEPLOY_HOST" && test -n "$DEPLOY_USER" && test -n "$DEPLOY_KEY" && test -n "$DEPLOY_KNOWN_HOSTS"
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/library_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/library_key ~/.ssh/known_hosts
+          ssh -i ~/.ssh/library_key -p "${DEPLOY_PORT:-22}" -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 "$DEPLOY_USER@$DEPLOY_HOST" deploy-library < app.tar.gz
