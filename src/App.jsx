@@ -162,6 +162,24 @@ export default function App({ library }) {
           </aside>
         )}
 
+        {activeTab === "posts" && (
+          <aside className="comment-guide post-guide" aria-label="图文发布小教程">
+            <strong>图文发布小教程</strong>
+            <ol>
+              <li>选一条文案，点“复制文案”，到抖音“写文字”里粘贴，生成图文封面。</li>
+              <li>在发布简介中写上福利介绍，再加相关 <code>#话题</code>。本页“复制全部”可一起复制文案和关键词。</li>
+              <li>需要配图时，到“宣传图库”保存图片，也可以添加本站的真实使用截图，作为后续图片。</li>
+              <li>预览封面、简介和图片，确认后发布；需要在评论里补图时，点评论框旁的图片按钮添加。</li>
+            </ol>
+            <div className="post-guide-images">
+              <figure><figcaption>1. 粘贴文案，制作图文</figcaption><a href="/tutorial/post-write.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-write.png" alt="抖音写文字页面，长按粘贴文案" loading="lazy" /></a></figure>
+              <figure><figcaption>2. 填写简介和 #话题</figcaption><a href="/tutorial/post-caption.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-caption.png" alt="发布页区分图文封面和简介，简介添加福利及话题" loading="lazy" /></a></figure>
+              <figure><figcaption>3. 可补充真实使用截图</figcaption><a href="/tutorial/post-proof.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-proof.png" alt="图文作品附上本站实际调用记录截图" loading="lazy" /></a></figure>
+              <figure><figcaption>4. 发布效果与评论补图</figcaption><a href="/tutorial/post-result.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-result.png" alt="发布后的图文作品，评论框图片按钮可以添加配图" loading="lazy" /></a></figure>
+            </div>
+          </aside>
+        )}
+
         {activeTab === "comments" ? (
           <section className="content-list" aria-label="评论文案">
             {filteredComments.map((item) => (

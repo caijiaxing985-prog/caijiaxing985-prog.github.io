@@ -202,6 +202,11 @@ button {
 .guide-images figure { margin: 0; min-width: 0; }
 .guide-images figcaption { margin-bottom: 6px; color: #5b616b; }
 .guide-images img { display: block; max-width: 100%; height: auto; }
+.post-guide-images { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:14px; align-items:start; }
+.post-guide-images figure { margin:0; min-width:0; }
+.post-guide-images figcaption { color:#5b616b; margin-bottom:8px; font-size:12px; }
+.post-guide-images img { display:block; width:100%; height:auto; border:1px solid #e0e3e8; border-radius:4px; }
+@media(max-width:700px) { .post-guide-images { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width: 700px) { .guide-images { grid-template-columns: 1fr; } }
 
 .content-item {
