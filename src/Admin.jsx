@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from './api.js';
+import { appendCommentImages, imagesForComment, setCommentImageLinked, unlinkImagesFromComment } from './commentImages.js';
 import { sitePath } from './paths.js';
 const labels = { comments: '评论', posts: '图文', gallery: '图片' };
 export default function Admin() {
@@ -33,6 +34,13 @@ export default function Admin() {
     updateItems([...items, item]); setSelected(id); setQuery('');
   };
   const move = delta => { const index = items.findIndex(item => item.id === selected); if (index < 0 || index + delta < 0 || index + delta >= items.length) return; const next = [...items]; [next[index], next[index + delta]] = [next[index + delta], next[index]]; updateItems(next); };
+  const removeCurrent = () => {
+    if (section === 'comments') {
+      setData(previous => ({ ...previous, comments: previous.comments.filter(item => item.id !== selected), gallery: unlinkImagesFromComment(previous.gallery, selected) }));
+      setDirty(true); setMessage('');
+    } else updateItems(items.filter(item => item.id !== selected));
+    setSelected(null);
+  };
   const save = publish => run(async () => {
     const result = await api(`/api/admin/${publish ? 'publish' : 'draft'}`, { method: 'PUT', body: JSON.stringify({ library: data, version }) });
     setVersion(result.version); setPublishedAt(result.publishedAt); setDirty(false);
@@ -47,6 +55,22 @@ export default function Admin() {
       setDirty(true); setMessage('图片已上传，请保存草稿或发布。');
     });
   };
+  const toggleCommentImage = (imageId, linked) => {
+    setData(previous => ({ ...previous, gallery: setCommentImageLinked(previous.gallery, imageId, selected, linked) }));
+    setDirty(true); setMessage('');
+  };
+  const uploadCommentImages = e => {
+    const files = [...e.target.files]; e.target.value = ''; if (!files.length) return; const commentId = selected;
+    run(async () => {
+      if (files.some(file => file.size > 15 * 1024 * 1024)) throw new Error('每张图片不能超过 15 MB');
+      let completed = 0;
+      for (const file of files) {
+        const result = await api('/api/admin/upload', { method: 'POST', body: file, headers: { 'Content-Type': file.type || 'application/octet-stream' } });
+        setData(previous => ({ ...previous, gallery: appendCommentImages(previous.gallery, [{ file: result.file, name: file.name }], commentId) }));
+        completed += 1; setDirty(true); setMessage(`已上传并关联 ${completed} 张图片，请保存草稿或发布。`);
+      }
+    });
+  };
   if (loading) return <main className="admin-login">正在连接后台…</main>;
   if (!loggedIn) return <main className="admin-login"><h1>文案库管理</h1><p>登录后编辑文案和宣传图片</p><form onSubmit={login}><label>管理员密码<input type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} /></label><button disabled={busy} className="copy-button">{busy ? '登录中…' : '登录'}</button></form>{error && <p role="alert" className="admin-error">{error}</p>}<a href={sitePath('/')}>查看公开页面</a></main>;
   return <div className="admin-shell">
@@ -57,8 +81,8 @@ export default function Admin() {
     {showPassword && <form className="admin-password" onSubmit={e => { e.preventDefault(); run(async () => { await api('/api/admin/password', { method: 'PUT', body: JSON.stringify({ currentPassword, password: newPassword }) }); setNewPassword(''); setCurrentPassword(''); setLoggedIn(false); }); }}><label>当前密码<input type="password" autoComplete="current-password" required value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} /></label><label>新密码（至少 12 个字符）<input type="password" autoComplete="new-password" required minLength={12} value={newPassword} onChange={e => setNewPassword(e.target.value)} /></label><button disabled={busy || dirty}>修改并重新登录</button>{dirty && <p>请先保存草稿，再修改密码。</p>}</form>}
     <div className="admin-tabs">{Object.entries(labels).map(([key, label]) => <button key={key} className={section === key ? 'active' : ''} disabled={busy} onClick={() => { setSection(key); setSelected(null); setQuery(''); }}>{label} {data[key].length}</button>)}</div>
     <fieldset disabled={busy} className="admin-layout"><aside className="admin-list"><button className="copy-button" onClick={add}>新增{labels[section]}</button><input aria-label="查找内容" placeholder="查找内容" value={query} onChange={e => setQuery(e.target.value)} />{items.filter(item => `${item.id} ${item.text || item.title || ''}`.toLowerCase().includes(query.toLowerCase())).map(item => <button key={item.id} className={`admin-row ${selected === item.id ? 'selected' : ''}`} onClick={() => setSelected(item.id)}><span>#{item.id}</span><span>{(item.title || item.text || '未填写内容').slice(0, 70)}</span></button>)}</aside>
-      <section className="admin-editor">{current ? <><div className="editor-tools"><strong>{labels[section]} #{current.id}</strong><button disabled={items[0].id === current.id} onClick={() => move(-1)}>上移</button><button disabled={items.at(-1).id === current.id} onClick={() => move(1)}>下移</button><button className="delete-button" onClick={() => ask('从当前草稿删除这一条？发布后公开页面才会删除。', () => { updateItems(items.filter(item => item.id !== selected)); setSelected(null); })}>删除</button></div>
-        {section === 'gallery' ? <><label>图片名称<input value={current.title} maxLength={200} onChange={e => edit('title', e.target.value)} /></label><label>介绍<textarea rows={4} value={current.description || ''} onChange={e => edit('description', e.target.value)} /></label><label>上传 / 替换图片（最大 15 MB）<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={upload} /></label>{current.file && <img className="admin-preview" src={sitePath(current.file)} alt={current.title || '图片预览'} />}<label>关联评论序号（可选，用逗号分隔）<input key={current.id} defaultValue={current.commentIds.join(', ')} onBlur={e => { const raw = e.target.value.trim(); const values = raw ? raw.split(/[,，\s]+/).map(Number) : []; if (values.every(n => Number.isSafeInteger(n) && n > 0)) edit('commentIds', values); else { setError('关联序号请填写正整数'); e.target.value = current.commentIds.join(', '); } }} /></label></> : <>{section === 'posts' && <label>内容方向<input value={current.direction} onChange={e => edit('direction', e.target.value)} /></label>}<label>文案正文<textarea rows={12} value={current.text} onChange={e => edit('text', e.target.value)} /></label>{section === 'posts' && <label>关键词 / 话题<textarea rows={4} value={current.keywords} onChange={e => edit('keywords', e.target.value)} /></label>}</>}
+      <section className="admin-editor">{current ? <><div className="editor-tools"><strong>{labels[section]} #{current.id}</strong><button disabled={items[0].id === current.id} onClick={() => move(-1)}>上移</button><button disabled={items.at(-1).id === current.id} onClick={() => move(1)}>下移</button><button className="delete-button" onClick={() => ask('从当前草稿删除这一条？发布后公开页面才会删除。', removeCurrent)}>删除</button></div>
+        {section === 'gallery' ? <><label>图片名称<input value={current.title} maxLength={200} onChange={e => edit('title', e.target.value)} /></label><label>介绍<textarea rows={4} value={current.description || ''} onChange={e => edit('description', e.target.value)} /></label><label>上传 / 替换图片（最大 15 MB）<input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={upload} /></label>{current.file && <img className="admin-preview" src={sitePath(current.file)} alt={current.title || '图片预览'} />}<label>关联评论序号（可选，用逗号分隔）<input key={current.id} defaultValue={current.commentIds.join(', ')} onBlur={e => { const raw = e.target.value.trim(); const values = raw ? raw.split(/[,，\s]+/).map(Number) : []; if (values.every(n => Number.isSafeInteger(n) && n > 0)) edit('commentIds', values); else { setError('关联序号请填写正整数'); e.target.value = current.commentIds.join(', '); } }} /></label></> : <>{section === 'posts' && <label>内容方向<input value={current.direction} onChange={e => edit('direction', e.target.value)} /></label>}<label>文案正文<textarea rows={12} value={current.text} onChange={e => edit('text', e.target.value)} /></label>{section === 'posts' && <label>关键词 / 话题<textarea rows={4} value={current.keywords} onChange={e => edit('keywords', e.target.value)} /></label>}{section === 'comments' && <section className="comment-image-admin" aria-label="评论配图管理"><div className="comment-image-admin-heading"><strong>评论配图</strong><span>已选择 {imagesForComment(data.gallery, current.id).length} 张</span></div><label className="comment-image-upload">直接上传配图（可多选，每张最大 15 MB）<input type="file" multiple accept="image/png,image/jpeg,image/webp,image/gif" onChange={uploadCommentImages} /></label>{data.gallery.length ? <div className="comment-image-options">{data.gallery.map(image => { const linked = image.commentIds.includes(current.id); return <label key={image.id} className={linked ? 'linked' : ''}><input type="checkbox" checked={linked} onChange={e => toggleCommentImage(image.id, e.target.checked)} /><img src={sitePath(image.file)} alt="" loading="lazy" /><span>#{image.id} {image.title}</span></label>; })}</div> : <p>还没有图片，请直接上传。</p>}</section>}</>}
       </> : <p>选择左侧内容编辑，或点击“新增”。排序按上移、下移调整，保存草稿后点击“发布更新”。</p>}</section>
     </fieldset>
   </div>;

@@ -225,6 +225,75 @@ button {
   grid-template-columns: 42px minmax(0, 1fr) auto;
 }
 
+.comment-content {
+  min-width: 0;
+}
+
+.comment-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  align-items: start;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.comment-item.has-images {
+  align-items: start;
+}
+
+.comment-item.has-images > .item-number,
+.comment-item.has-images > .copy-button {
+  margin-top: 3px;
+}
+
+.comment-images figure {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #e0e3e8;
+  border-radius: 5px;
+  background: #f7f8fa;
+}
+
+.comment-image-preview {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  place-items: center;
+  padding: 8px;
+  background: #eef0f3;
+}
+
+.comment-image-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.comment-images figcaption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 7px 6px 10px;
+}
+
+.comment-images figcaption > span {
+  min-width: 0;
+  flex: 1;
+  color: #4e5560;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.comment-images .asset-button {
+  min-height: 34px;
+  padding: 6px 9px;
+  flex: 0 0 auto;
+  font-size: 12px;
+}
+
 .post-item {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: stretch;
@@ -506,6 +575,10 @@ button {
   .comment-item .copy-button {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .comment-images {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .post-item {

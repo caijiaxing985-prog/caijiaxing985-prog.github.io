@@ -19,4 +19,14 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 .admin-shell textarea { resize:vertical; line-height:1.65; }.admin-preview { max-width:100%; max-height:360px; display:block; object-fit:contain; margin:12px auto; }
 .admin-message { background:#e8f6ee; color:#14643e; padding:10px 14px; }.admin-error { background:#fff0ee; color:#9d2834; padding:10px 14px; }.admin-password { padding:14px; background:white; border:1px solid #ddd; }
 .gallery-description { font-size:13px; color:#5b616b; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; }
+.comment-image-admin { margin-top:18px; padding-top:16px; border-top:1px solid #e0e3e8; }
+.comment-image-admin-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.comment-image-admin-heading span { color:#68707c; font-size:12px; }
+.comment-image-upload { padding:12px; border:1px dashed #bcc2cb; border-radius:5px; background:#f7f8fa; }
+.comment-image-options { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:9px; margin-top:12px; }
+.admin-shell .comment-image-options label { position:relative; display:grid; grid-template-rows:110px auto; gap:6px; min-width:0; margin:0; padding:7px; border:1px solid #d9dce2; border-radius:5px; background:#fff; cursor:pointer; }
+.admin-shell .comment-image-options label.linked { border-color:#ff375f; background:#fff2f5; box-shadow:0 0 0 2px rgba(255,55,95,.1); }
+.admin-shell .comment-image-options input[type="checkbox"] { position:absolute; top:9px; right:9px; width:20px; height:20px; margin:0; accent-color:#ff375f; }
+.comment-image-options img { display:block; width:100%; height:110px; object-fit:contain; background:#eef0f3; }
+.comment-image-options span { min-width:0; color:#343a44; font-size:12px; line-height:1.45; overflow-wrap:anywhere; }
 @media(max-width:700px) { .admin-shell { padding:12px; }.admin-layout { grid-template-columns:1fr; }.admin-list { max-height:230px; }.admin-editor { padding:14px; }.admin-header h1 { flex-basis:100%; } }

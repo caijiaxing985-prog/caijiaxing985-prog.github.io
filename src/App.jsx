@@ -10,6 +10,7 @@ import {
   Search,
 } from "lucide-react";
 import { buildPostText, copyText } from "./copy.js";
+import { imagesForComment } from "./commentImages.js";
 import { sitePath } from "./paths.js";
 
 function CopyButton({ id, copiedId, label = "复制", onCopy, secondary = false }) {
@@ -183,17 +184,40 @@ export default function App({ library }) {
 
         {activeTab === "comments" ? (
           <section className="content-list" aria-label="评论文案">
-            {filteredComments.map((item) => (
-              <article className="content-item comment-item" key={item.id}>
-                <span className="item-number">#{item.id}</span>
-                <p>{item.text}</p>
-                <CopyButton
-                  id={`comment-${item.id}`}
-                  copiedId={copiedId}
-                  onCopy={() => performCopy(`comment-${item.id}`, item.text, "评论已复制")}
-                />
-              </article>
-            ))}
+            {filteredComments.map((item) => {
+              const images = imagesForComment(galleryItems, item.id);
+              return (
+                <article className={`content-item comment-item${images.length ? " has-images" : ""}`} key={item.id}>
+                  <span className="item-number">#{item.id}</span>
+                  <div className="comment-content">
+                    <p>{item.text}</p>
+                    {images.length > 0 && (
+                      <div className="comment-images" aria-label={`评论 ${item.id} 的配图`}>
+                        {images.map((image) => (
+                          <figure key={image.id}>
+                            <a className="comment-image-preview" href={sitePath(image.file)} target="_blank" rel="noreferrer">
+                              <img src={sitePath(image.file)} alt={image.title} loading="lazy" />
+                            </a>
+                            <figcaption>
+                              <span>{image.title}</span>
+                              <a className="asset-button primary" href={sitePath(image.file)} download={`jianyoon-${image.id}.${image.file.split('.').pop()}`}>
+                                <Download size={15} strokeWidth={2} aria-hidden="true" />
+                                <span>保存图片</span>
+                              </a>
+                            </figcaption>
+                          </figure>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <CopyButton
+                    id={`comment-${item.id}`}
+                    copiedId={copiedId}
+                    onCopy={() => performCopy(`comment-${item.id}`, item.text, "评论已复制")}
+                  />
+                </article>
+              );
+            })}
           </section>
         ) : activeTab === "posts" ? (
           <section className="content-list" aria-label="图文文案">
