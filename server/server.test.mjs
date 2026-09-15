@@ -66,3 +66,27 @@ test('authenticated editing, draft isolation, publish, uploads and restart persi
     await stop(); server = null;
   } finally { if(server?.listening) await stop(); fs.rmSync(dataDir,{recursive:true,force:true}); }
 });
+
+test('uses the full public URL in share metadata for a subdirectory deployment', async () => {
+  const testDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jianyoon-origin-test-'));
+  const dataDir = path.join(testDir, 'data');
+  const staticDir = path.join(testDir, 'dist');
+  fs.mkdirSync(staticDir);
+  fs.writeFileSync(path.join(staticDir, 'index.html'), '<meta property="og:url" content="old" /><meta property="og:image" content="https://caijiaxing985-prog.github.io/share-cover.png" />');
+  const server = createLibraryServer({
+    dataDir,
+    staticDir,
+    password: 'test-only-not-deployed-891',
+    origin: 'https://jianyoon.com/wenan',
+  });
+  try {
+    await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+    const address = `http://127.0.0.1:${server.address().port}`;
+    const html = await (await fetch(address)).text();
+    assert.match(html, /<meta property="og:url" content="https:\/\/jianyoon\.com\/wenan" \/>/);
+    assert.match(html, /<meta property="og:image" content="https:\/\/jianyoon\.com\/wenan\/share-cover\.png" \/>/);
+  } finally {
+    await new Promise(resolve => server.close(resolve));
+    fs.rmSync(testDir, { recursive: true, force: true });
+  }
+});

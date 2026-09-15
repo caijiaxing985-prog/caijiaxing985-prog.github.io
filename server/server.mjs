@@ -39,7 +39,8 @@ export function createLibraryServer(options = {}) {
   const dataDir = path.resolve(options.dataDir || process.env.DATA_DIR || path.join(project, 'data'));
   const staticDir = path.resolve(options.staticDir || path.join(project, 'dist'));
   const configuredOrigin = options.origin ?? process.env.PUBLIC_ORIGIN ?? '';
-  const origin = configuredOrigin ? new URL(configuredOrigin).origin : '';
+  const publicUrl = configuredOrigin ? configuredOrigin.replace(/\/$/, '') : '';
+  const origin = publicUrl ? new URL(publicUrl).origin : '';
   const secure = origin.startsWith('https://');
   fs.mkdirSync(path.join(dataDir, 'uploads'), { recursive: true });
   const db = new DatabaseSync(path.join(dataDir, 'library.sqlite'));
@@ -180,8 +181,8 @@ export function createLibraryServer(options = {}) {
       if (!fs.existsSync(file) || !fs.statSync(file).isFile()) throw fail(404, '文件不存在');
       if (file.endsWith('index.html')) {
         let html = fs.readFileSync(file, 'utf8');
-        html = html.replace('https://caijiaxing985-prog.github.io/share-cover.png', origin ? `${origin}/share-cover.png` : '/share-cover.png');
-        html = html.replace(/<meta property="og:url"[^>]*>/, origin ? `<meta property="og:url" content="${origin}" />` : '');
+        html = html.replace('https://caijiaxing985-prog.github.io/share-cover.png', publicUrl ? `${publicUrl}/share-cover.png` : '/share-cover.png');
+        html = html.replace(/<meta property="og:url"[^>]*>/, publicUrl ? `<meta property="og:url" content="${publicUrl}" />` : '');
         res.writeHead(200, { 'Content-Type': mime['.html'] }); return res.end(req.method === 'HEAD' ? undefined : html);
       }
       res.setHeader('Content-Type', mime[path.extname(file)] || 'application/octet-stream');

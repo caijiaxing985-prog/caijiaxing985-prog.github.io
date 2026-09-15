@@ -10,6 +10,7 @@ import {
   Search,
 } from "lucide-react";
 import { buildPostText, copyText } from "./copy.js";
+import { sitePath } from "./paths.js";
 
 function CopyButton({ id, copiedId, label = "复制", onCopy, secondary = false }) {
   const copied = copiedId === id;
@@ -156,8 +157,8 @@ export default function App({ library }) {
             </ol>
             <p>前面的 <code>{"<"}</code> 要保留；只粘贴名字不会生成蓝色 @。</p>
               <div className="guide-images">
-                <figure><figcaption>选择这个账号：{">jianyoon"}</figcaption><a href="/tutorial/account.png" target="_blank" rel="noreferrer"><img src="/tutorial/account.png" alt="要选择的用户 >jianyoon，锋云 API 头像" loading="lazy" /></a></figure>
-                <figure><figcaption>效果参考：选中后名字变蓝</figcaption><a href="/tutorial/result.jpg" target="_blank" rel="noreferrer"><img src="/tutorial/result.jpg" alt="抖音评论中的蓝色用户名效果" loading="lazy" /></a></figure>
+                <figure><figcaption>选择这个账号：{">jianyoon"}</figcaption><a href={sitePath("/tutorial/account.png")} target="_blank" rel="noreferrer"><img src={sitePath("/tutorial/account.png")} alt="要选择的用户 >jianyoon，锋云 API 头像" loading="lazy" /></a></figure>
+                <figure><figcaption>效果参考：选中后名字变蓝</figcaption><a href={sitePath("/tutorial/result.jpg")} target="_blank" rel="noreferrer"><img src={sitePath("/tutorial/result.jpg")} alt="抖音评论中的蓝色用户名效果" loading="lazy" /></a></figure>
               </div>
           </aside>
         )}
@@ -172,10 +173,10 @@ export default function App({ library }) {
               <li>预览封面、简介和图片，确认后发布；需要在评论里补图时，点评论框旁的图片按钮添加。</li>
             </ol>
             <div className="post-guide-images">
-              <figure><figcaption>1. 粘贴文案，制作图文</figcaption><a href="/tutorial/post-write.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-write.png" alt="抖音写文字页面，长按粘贴文案" loading="lazy" /></a></figure>
-              <figure><figcaption>2. 填写简介和 #话题</figcaption><a href="/tutorial/post-caption.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-caption.png" alt="发布页区分图文封面和简介，简介添加福利及话题" loading="lazy" /></a></figure>
-              <figure><figcaption>3. 可补充真实使用截图</figcaption><a href="/tutorial/post-proof.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-proof.png" alt="图文作品附上本站实际调用记录截图" loading="lazy" /></a></figure>
-              <figure><figcaption>4. 发布效果与评论补图</figcaption><a href="/tutorial/post-result.png" target="_blank" rel="noreferrer"><img src="/tutorial/post-result.png" alt="发布后的图文作品，评论框图片按钮可以添加配图" loading="lazy" /></a></figure>
+              <figure><figcaption>1. 粘贴文案，制作图文</figcaption><a href={sitePath("/tutorial/post-write.png")} target="_blank" rel="noreferrer"><img src={sitePath("/tutorial/post-write.png")} alt="抖音写文字页面，长按粘贴文案" loading="lazy" /></a></figure>
+              <figure><figcaption>2. 填写简介和 #话题</figcaption><a href={sitePath("/tutorial/post-caption.png")} target="_blank" rel="noreferrer"><img src={sitePath("/tutorial/post-caption.png")} alt="发布页区分图文封面和简介，简介添加福利及话题" loading="lazy" /></a></figure>
+              <figure><figcaption>3. 可补充真实使用截图</figcaption><a href={sitePath("/tutorial/post-proof.png")} target="_blank" rel="noreferrer"><img src={sitePath("/tutorial/post-proof.png")} alt="图文作品附上本站实际调用记录截图" loading="lazy" /></a></figure>
+              <figure><figcaption>4. 发布效果与评论补图</figcaption><a href={sitePath("/tutorial/post-result.png")} target="_blank" rel="noreferrer"><img src={sitePath("/tutorial/post-result.png")} alt="发布后的图文作品，评论框图片按钮可以添加配图" loading="lazy" /></a></figure>
             </div>
           </aside>
         )}
@@ -228,8 +229,8 @@ export default function App({ library }) {
           <section className="gallery-grid" aria-label="宣传图库">
             {filteredGallery.map((item) => (
               <article className="gallery-item" key={item.id}>
-                <a className="gallery-preview" href={item.file} target="_blank" rel="noreferrer">
-                  <img src={item.file} alt={item.title} loading="lazy" />
+                <a className="gallery-preview" href={sitePath(item.file)} target="_blank" rel="noreferrer">
+                  <img src={sitePath(item.file)} alt={item.title} loading="lazy" />
                 </a>
                 <div className="gallery-info">
                   <div className="gallery-heading">
@@ -241,11 +242,11 @@ export default function App({ library }) {
                     {item.commentIds.map((id) => <span key={id}>评论 #{id}</span>)}
                   </div>
                   <div className="gallery-actions">
-                    <a className="asset-button primary" href={item.file} download={`jianyoon-${item.id}.${item.file.split('.').pop()}`}>
+                    <a className="asset-button primary" href={sitePath(item.file)} download={`jianyoon-${item.id}.${item.file.split('.').pop()}`}>
                       <Download size={16} strokeWidth={2} aria-hidden="true" />
                       <span>下载图片</span>
                     </a>
-                    <a className="asset-button" href={item.file} target="_blank" rel="noreferrer">
+                    <a className="asset-button" href={sitePath(item.file)} target="_blank" rel="noreferrer">
                       <ExternalLink size={16} strokeWidth={2} aria-hidden="true" />
                       <span>查看原图</span>
                     </a>

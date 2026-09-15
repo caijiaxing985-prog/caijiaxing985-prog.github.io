@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import App from './App.jsx';
 import Admin from './Admin.jsx';
 import { api } from './api.js';
+import { isAdminPath } from './paths.js';
 export default function LiveApp() {
-  const admin = window.location.pathname.replace(/\/$/, '') === '/admin';
+  const admin = isAdminPath();
   const [library, setLibrary] = useState(null), [error, setError] = useState('');
   useEffect(() => {
     if (admin) return; let live = true;
